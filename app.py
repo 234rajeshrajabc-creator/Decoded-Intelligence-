@@ -13,14 +13,12 @@ st.set_page_config(
 # 2. Hyper-Pro Custom CSS Engine (Bloomberg Terminal Aesthetics & Smooth Animations)
 st.markdown("""
     <style>
-    /* Full Dark Cyber Mode Background */
     body, .main, .reportview-container {
         background-color: #05070a !important;
         color: #e2e8f0 !important;
         font-family: 'Courier New', Courier, monospace !important;
     }
     
-    /* Fade-in Animation for Ultra Smooth Presentation */
     @keyframes fadeIn {
         0% { opacity: 0; transform: translateY(10px); }
         100% { opacity: 1; transform: translateY(0); }
@@ -29,7 +27,6 @@ st.markdown("""
         animation: fadeIn 0.8s ease-out-all;
     }
 
-    /* Next-Gen KPI Metric Cards Styling */
     .kpi-container {
         background: linear-gradient(135deg, #0d1527 0%, #070a12 100%);
         border: 1px solid #1e293b;
@@ -54,12 +51,6 @@ st.markdown("""
         font-size: 1.8rem;
         font-weight: 700;
         letter-spacing: -0.02em;
-    }
-    
-    /* Custom Sidebar Aesthetics */
-    .css-11v0wun, .css-6qob1r {
-        background-color: #090d16 !important;
-        border-right: 1px solid #1e293b !important;
     }
     </style>
 """, unsafe_allow_html=True)
@@ -112,7 +103,6 @@ def run_institutional_engine(assets, year, path, baseline_equity, d_weight):
         capex_required = 290.0 if year >= 2029 else 0.0
         status_code = "CRITICAL_COMPROMISE"
 
-    # Compute Re-priced WACC Formula (From Page 21 of Report)
     e_weight = (100 - d_weight) / 100.0
     d_weight_pct = d_weight / 100.0
     final_equity_cost = (baseline_equity + (wacc_premium_bps / 100.0)) / 100.0
@@ -135,7 +125,7 @@ with col1:
     st.markdown(f"""
         <div class='kpi-container'>
             <div class='kpi-title'>🛡️ Quantum Attack Surface</div>
-            <div class='kpi-value' style='color: {"#00ff66" if pb_exposed == 0 else "#ff3333"};'>{pb_exposed:.1f} PB</div>
+            <div class='kpi-value' style='color: {"#00ff66" if pb_exposed == 0 else "#f43f5e"};'>{pb_exposed:.1f} PB</div>
             <div style='font-size: 0.7rem; margin-top: 5px; color: #64748b;'>HNDL Vector Exposure Area</div>
         </div>
     """, unsafe_allow_html=True)
@@ -173,13 +163,13 @@ st.markdown("<br>", unsafe_allow_html=True)
 col_left, col_right = st.columns(2)
 
 with col_left:
-    st.markdown("<h3 style='color: #ffffff; font-size: 1.1rem; letter-spacing: 0.05em;'>📈 CRYPTOGRAPHIC DECAY VELEOCITY CURVE</h3>", unsafe_allow_html=True)
+    st.markdown("<h3 style='color: #ffffff; font-size: 1.1rem; letter-spacing: 0.05em;'>📈 CRYPTOGRAPHIC DECAY VELOCITY CURVE</h3>", unsafe_allow_html=True)
     years_arr = ["2026", "2027", "2028", "2029", "2030"]
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=years_arr, y=[0, 0, 0, 0, 0], name='Proactive (ML-KEM)', line=dict(color='#00ff66', width=3)))
-    fig.add_trace(go.Scatter(x=years_arr, y=[420, 890, 1280, 1500, 1900], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
-    fig.add_trace(go.Scatter(x=years_arr, y=[580, 1100, 2400, 3100, 4500], name='Systemic Shock', line=dict(color='#ff3333', width=4)))
+    fig.add_trace(go.Scatter(x=years_arr, y=[420, 890, 1280, 1280, 1280], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
+    fig.add_trace(go.Scatter(x=years_arr, y=[420, 1100, 2400, 3100, 4500], name='Systemic Shock', line=dict(color='#ff3333', width=4)))
     
     fig.update_layout(
         template="plotly_dark", 
@@ -218,3 +208,9 @@ if code == "OPTIMAL_ALPHA":
 elif code == "DEGRADED_COMPLIANCE":
     st.markdown(f"""
         <div style='background-color: rgba(255, 170, 0, 0.05); border: 1px solid #ffaa00; padding: 15px; border-radius: 6px;'>
+            <strong style='color: #ffaa00;'>[WARNING: DEGRADED COMPLIANCE]</strong> <strong>IF</strong> infrastructure inertia remains unmitigated past {target_year}, <strong>THEN</strong> quantitative matrices project an unpriced corporate vulnerability accumulation resulting in an estimated <strong>${metrics_loss:.2f} Million</strong> retroactive ledger asset risk.
+        </div>
+    """, unsafe_allow_html=True)
+else:
+    st.markdown(f"""
+        <div style='background-color: rgba(255, 51, 51, 0.05); border: 1px solid #ff3333; padding: 15px; border-radius: 6px;'>
