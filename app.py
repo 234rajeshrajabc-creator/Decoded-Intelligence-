@@ -214,3 +214,6 @@ elif code == "DEGRADED_COMPLIANCE":
 else:
     st.markdown(f"""
         <div style='background-color: rgba(255, 51, 51, 0.05); border: 1px solid #ff3333; padding: 15px; border-radius: 6px;'>
+            <strong style='color: #ff3333;'>[CRITICAL ALERT: SYSTEMIC SHOCK]</strong> <strong>CRITICAL RISK DETECTED:</strong> Zero active mitigation strategy exposes total corporate assets. Implied balance sheet loss projection is <strong>${metrics_loss:.2f} Million</strong> by {target_year}.
+        </div>
+    """, unsafe_allow_html=True)
