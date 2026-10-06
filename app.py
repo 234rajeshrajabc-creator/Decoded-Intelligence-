@@ -81,12 +81,12 @@ else:
     st.error(f"**🔥 SECURITY THRESHOLD CRITICAL COMPROMISE:** {integrity}. **IF** migration is delayed beyond Q4 2027, **THEN** insurance syndicates will deny cyber-liability coverage, triggering a liquidity freeze vector.")
 
 # Predictive Data Grid
-st.markdown("### 📅 Comparative Projection Table (2026-2030)")
+st.markdown("### 📅 Comparative Projection Table (Scenario C: Systemic Shock Baseline)")
 df_display = pd.DataFrame({
-    "Year":,
-    "Attack Surface Exposure (PB)":,
-    "WACC Baseline Impact": ["+15 bps", "+45 bps", "+95 bps", "+340 bps", "Liquidity Freeze"],
-    "Panic CapEx Cost Variant": ["$12M", "$18M", "$45M", "$290M", "Institutional Bankruptcy"]
+    "Year": ["2026", "2027", "2028", "2029", "2030"],
+    "Attack Surface Exposure (PB)": ["420 PB", "1,100 PB", "2,400 PB", "3,100 PB", "Compromised Layer"],
+    "WACC Baseline Impact": ["+15 bps", "+180 bps", "+340 bps", "+580 bps", "Liquidity Freeze"],
+    "Panic CapEx Cost Variant": ["$12M", "$0", "$0", "$290M", "Institutional Bankruptcy"]
 })
 st.table(df_display)
 
