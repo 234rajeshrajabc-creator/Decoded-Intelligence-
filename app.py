@@ -159,7 +159,7 @@ with col4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# --- HIGH-TECH CHARTING SUITE ---
+# --- HIGH-TECH CHARTING SUITE (FIXED DATA ARRAY VALUES) ---
 col_left, col_right = st.columns(2)
 
 with col_left:
@@ -168,8 +168,8 @@ with col_left:
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=years_arr, y=[0, 0, 0, 0, 0], name='Proactive (ML-KEM)', line=dict(color='#00ff66', width=3)))
-    fig.add_trace(go.Scatter(x=years_arr, y=[420, 890, 1280, 1280, 1280], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
-    fig.add_trace(go.Scatter(x=years_arr, y=[420, 1100, 2400, 3100, 4500], name='Systemic Shock', line=dict(color='#ff3333', width=4)))
+    fig.add_trace(go.Scatter(x=years_arr, y=[420, 588, 823, 1152, 1612], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
+    fig.add_trace(go.Scatter(x=years_arr, y=[580, 1100, 2400, 3100, 4500], name='Systemic Shock', line=dict(color='#ff3333', width=4)))
     
     fig.update_layout(
         template="plotly_dark", 
@@ -214,6 +214,3 @@ elif code == "DEGRADED_COMPLIANCE":
 else:
     st.markdown(f"""
         <div style='background-color: rgba(255, 51, 51, 0.05); border: 1px solid #ff3333; padding: 15px; border-radius: 6px;'>
-            <strong style='color: #ff3333;'>[CRITICAL ALERT: SYSTEMIC SHOCK]</strong> <strong>CRITICAL RISK DETECTED:</strong> Zero active mitigation strategy exposes total corporate assets. Implied balance sheet loss projection is <strong>${metrics_loss:.2f} Million</strong> by {target_year}.
-        </div>
-    """, unsafe_allow_html=True)
