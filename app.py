@@ -94,24 +94,22 @@ with col4:
 st.markdown("---")
 
 # --- HIGH-TECH VISUALIZATION SUITE ---
-col_left, col_right = st.columns([3, 2])
+col_left, col_right = st.columns(2)
 
 with col_left:
     st.markdown("### 📈 Quantum Cryptographic Decay Grid (Dynamic Simulation)")
-    years_arr = np.array([2026, 2027, 2028, 2029, 2030])
+    years_arr = ["2026", "2027", "2028", "2029", "2030"]
     
-    # Generate multi-scenario arrays dynamically for plotly
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=years_arr, y=[0, 0, 0, 0, 0], name='Proactive Adaptation', line=dict(color='#00ff66', width=3)))
-    fig.add_trace(go.Scatter(x=years_arr, y=[420, 890, 1280, 1280, 1280], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
-    fig.add_trace(go.Scatter(x=years_arr, y=[420, 1100, 2400, 3100, 4500], name='Systemic Shock Curve', line=dict(color='#ff3333', width=4)))
+    fig.add_trace(go.Scatter(x=years_arr, y=[420, 588, 823, 1152, 1612], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
+    fig.add_trace(go.Scatter(x=years_arr, y=[580, 812, 1624, 3248, 4500], name='Systemic Shock Curve', line=dict(color='#ff3333', width=4)))
     
     fig.update_layout(template="plotly_dark", title="Attack Surface Growth Vector (PB Exposed)", xaxis_title="Timeline", yaxis_title="Petabytes", height=380)
     st.plotly_chart(fig, use_container_width=True)
 
 with col_right:
     st.markdown("### 🎛️ Diagnostic Sensitivity Engine")
-    # Interactive Data table corresponding directly with Page 21 benchmark configurations
     sensitivity_data = pd.DataFrame({
         "Simulated Asset Base": [f"${asset_value:.0f}M", f"${asset_value:.0f}M", f"${asset_value:.0f}M"],
         "Threat Matrix Model": ["Proactive Path", "Inertia Delay", "Shor System Shock"],
