@@ -6,14 +6,14 @@ import plotly.graph_objects as go
 # Set institutional layout configurations
 st.set_page_config(page_title="Decoded Intelligence | PQC Risk Terminal", layout="wide", initial_sidebar_state="expanded")
 
-# Dark Theme & Custom CSS Styling for Bloomberg-Terminal Aesthetic
+# Dark Theme & Custom CSS Styling for Bloomberg-Terminal Aesthetic (Fixed Parameter)
 st.markdown("""
     <style>
     .reportview-container { background: #0e1117; }
     .metric-box { border-left: 4px solid #00ff66; padding-left: 10px; margin-bottom: 15px; }
     .error-box { border-left: 4px solid #ff3333; padding-left: 10px; }
     </style>
-""", unsafe_style_html=True)
+""", unsafe_allow_html=True)
 
 # Main Terminal Header
 st.title("🛡️ DECODED INTELLIGENCE | RISK TERMINAL v1.2")
@@ -79,11 +79,11 @@ st.subheader("📊 EXECUTION CORE METRICS")
 col1, col2, col3, col4 = st.columns(4)
 
 with col1:
-    st.markdown("<div class='metric-box'>", unsafe_style_html=True)
+    st.markdown("<div class='metric-box'>", unsafe_allow_html=True)
     st.metric(label="Data at Risk Surface", value=f"{pb_exposed:.1f} PB", delta=f"+{pb_exposed:.1f} PB vs Target" if pb_exposed > 0 else "0.0 PB (Secure)")
     st.markdown("</div>", unsafe_style_html=True)
 with col2:
-    st.markdown("<div class='metric-box'>", unsafe_style_html=True)
+    st.markdown("<div class='metric-box'>", unsafe_allow_html=True)
     st.metric(label="Re-Priced Corporate WACC", value=f"{repriced_wacc:.2f}%", delta=f"+{bps_premium} bps Equity Premium" if bps_premium > 0 else "Baseline Optimal")
     st.markdown("</div>", unsafe_style_html=True)
 with col3:
@@ -102,8 +102,8 @@ with col_left:
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=years_arr, y=[0, 0, 0, 0, 0], name='Proactive Adaptation', line=dict(color='#00ff66', width=3)))
-    fig.add_trace(go.Scatter(x=years_arr, y=[420, 588, 823, 1152, 1612], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
-    fig.add_trace(go.Scatter(x=years_arr, y=[580, 812, 1624, 3248, 4500], name='Systemic Shock Curve', line=dict(color='#ff3333', width=4)))
+    fig.add_trace(go.Scatter(x=years_arr, y=[420, 588, 1260, 1680, 2100], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
+    fig.add_trace(go.Scatter(x=years_arr, y=[580, 1624, 2436, 3248, 4060], name='Systemic Shock Curve', line=dict(color='#ff3333', width=4)))
     
     fig.update_layout(template="plotly_dark", title="Attack Surface Growth Vector (PB Exposed)", xaxis_title="Timeline", yaxis_title="Petabytes", height=380)
     st.plotly_chart(fig, use_container_width=True)
