@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. Custom CSS styling
+# 2. Complete Dark Institutional CSS Overhaul
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -24,6 +24,19 @@ st.markdown("""
 
     code, .mono-font {
         font-family: 'JetBrains Mono', monospace !important;
+    }
+
+    /* Override Sidebar Dark Theme */
+    section[data-testid="stSidebar"] {
+        background-color: #0b111c !important;
+        border-right: 1px solid #1e293b !important;
+    }
+    
+    /* Remove standard form border & white backgrounds */
+    [data-testid="stForm"] {
+        border: none !important;
+        padding: 0px !important;
+        background: transparent !important;
     }
 
     .brand-container {
@@ -83,11 +96,6 @@ st.markdown("""
         color: #94a3b8;
     }
 
-    div[data-testid="stSidebar"] {
-        background-color: #080d16 !important;
-        border-right: 1px solid #1e293b;
-    }
-
     /* Custom Stylish SUBMIT Button */
     div.stButton > button {
         background: linear-gradient(135deg, #00ff66 0%, #00cc52 100%) !important;
@@ -101,6 +109,7 @@ st.markdown("""
         letter-spacing: 0.08em !important;
         box-shadow: 0px 4px 15px rgba(0, 255, 102, 0.3) !important;
         transition: all 0.3s ease !important;
+        margin-top: 15px !important;
     }
     div.stButton > button:hover {
         transform: translateY(-2px);
@@ -123,19 +132,18 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. Clean Sidebar Form
+# 4. Clean Sidebar (Direct Controls without form wrapper to remove "Press Enter" hint)
 st.sidebar.markdown("### 🏢 **INSTITUTIONAL PARAMS**")
-with st.sidebar.form(key='input_form'):
-    asset_val = st.number_input("Total Asset Exposure ($M)", min_value=10.0, value=1250.0, step=50.0)
-    cost_equity = st.slider("Cost of Equity (%)", 4.0, 15.0, 9.9, 0.1)
-    debt_wt = st.slider("Debt Weight (%)", 10, 70, 30, 5)
 
-    st.markdown("---")
-    st.markdown("### 🎯 **TIMELINE HORIZON**")
-    target_yr = st.slider("Target Horizon Year", 2026, 2035, 2030)
-    
-    st.markdown("<br>", unsafe_allow_html=True)
-    submit_button = st.form_submit_button(label="SUBMIT")
+asset_val = st.sidebar.number_input("Total Asset Exposure ($M)", min_value=10.0, value=1250.0, step=50.0, help="Enter asset value in Millions")
+cost_equity = st.sidebar.slider("Cost of Equity (%)", 4.0, 15.0, 12.2, 0.1)
+debt_wt = st.sidebar.slider("Debt Weight (%)", 10, 70, 30, 5)
+
+st.sidebar.markdown("---")
+st.sidebar.markdown("### 🎯 **TIMELINE HORIZON**")
+target_yr = st.sidebar.slider("Target Horizon Year", 2026, 2035, 2033)
+
+submit_button = st.sidebar.button(label="SUBMIT")
 
 def format_currency(value_millions):
     if value_millions >= 1000:
@@ -199,12 +207,12 @@ with c4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 7. High-Performance Full Interactive Graph
+# 7. High-Performance Pro Plotly Chart
 st.markdown("##### 📈 **QUANTUM RISK EXPOSURE PROJECTION (2026 - 2035)**")
 
 fig = go.Figure()
 
-# Line 1: Base Exposure
+# Base Exposure Line
 fig.add_trace(go.Scatter(
     x=years, 
     y=baseline_exposure, 
@@ -215,7 +223,7 @@ fig.add_trace(go.Scatter(
     hovertemplate='Year: %{x}<br>Base Asset: $%{y:.1f}M<extra></extra>'
 ))
 
-# Line 2: Moderate Risk
+# Moderate Risk Line
 fig.add_trace(go.Scatter(
     x=years, 
     y=moderate_shock, 
@@ -223,10 +231,10 @@ fig.add_trace(go.Scatter(
     name='Moderate Risk Exposure',
     line=dict(color='#fba518', width=3),
     marker=dict(size=7),
-    hovertemplate='Year: %{x}<br>Moderate Exposure: $%{y:.1f}M<extra></extra>'
+    hovertemplate='Year: %{x}<br>Moderate: $%{y:.1f}M<extra></extra>'
 ))
 
-# Line 3: Severe Tail Risk
+# Severe Risk Line
 fig.add_trace(go.Scatter(
     x=years, 
     y=severe_shock, 
@@ -234,10 +242,10 @@ fig.add_trace(go.Scatter(
     name='Severe Tail Risk (CVaR)',
     line=dict(color='#f43f5e', width=3, dash='dash'),
     marker=dict(size=7),
-    hovertemplate='Year: %{x}<br>Severe Exposure: $%{y:.1f}M<extra></extra>'
+    hovertemplate='Year: %{x}<br>Severe: $%{y:.1f}M<extra></extra>'
 ))
 
-# Target Year Highlight Vertical Marker
+# Highlight Target Vertical Line
 fig.add_vline(
     x=target_yr, 
     line_width=2, 
@@ -245,56 +253,66 @@ fig.add_vline(
     line_color="#00ff66",
     annotation_text=f"Target {target_yr}",
     annotation_position="top left",
-    annotation_font=dict(color="#00ff66", size=12, family="JetBrains Mono")
+    annotation_font=dict(color="#00ff66", size=13, family="JetBrains Mono")
 )
 
-# Smooth Responsive Layout & Interactive Zoom Controls Enabled
+# Responsive Layout & High Visibility Text
 fig.update_layout(
     template="plotly_dark",
     paper_bgcolor='rgba(0,0,0,0)',
-    plot_bgcolor='rgba(11, 17, 28, 0.8)',
-    height=420,
+    plot_bgcolor='rgba(11, 17, 28, 0.95)',
+    height=450,
     autosize=True,
-    margin=dict(l=10, r=10, t=30, b=10),
+    margin=dict(l=15, r=15, t=50, b=20),
     hovermode="x unified",
     hoverlabel=dict(
         bgcolor="#0b111c",
-        font_size=11,
+        font_size=12,
         font_family="JetBrains Mono",
         font_color="#ffffff"
     ),
     legend=dict(
         orientation="h",
         yanchor="bottom",
-        y=1.03,
-        xanchor="center",
-        x=0.5,
-        font=dict(size=11)
+        y=1.05,
+        xanchor="left",
+        x=0.0,
+        font=dict(size=11, color="#ffffff"),
+        bgcolor="rgba(0,0,0,0)"
     )
 )
 
-# Full Year Range (2026 to 2035)
+# Axis Customization with Clear White Text
 fig.update_xaxes(
     title_text="Year", 
+    title_font=dict(color="#ffffff", size=12),
+    tickfont=dict(color="#ffffff", size=11),
     showgrid=True, 
     gridcolor='#1e293b', 
     dtick=1, 
-    range=[2025.5, 2035.5]
+    range=[2025.6, 2035.4]
 )
-fig.update_yaxes(title_text="Asset Exposure ($M)", showgrid=True, gridcolor='#1e293b')
 
-# Interactive controls enabled for zoom/pan
+fig.update_yaxes(
+    title_text="Asset Exposure ($M)", 
+    title_font=dict(color="#ffffff", size=12),
+    tickfont=dict(color="#ffffff", size=11),
+    showgrid=True, 
+    gridcolor='#1e293b'
+)
+
+# Pro Touch Interactive Chart Configuration
 st.plotly_chart(
     fig, 
     use_container_width=True, 
     config={
-        'displayModeBar': True,
         'scrollZoom': True,
-        'displaylogo': False
+        'displayModeBar': False,
+        'responsive': True
     }
 )
 
-# 8. Selected Target Year Summary Table
+# 8. Target Breakdown Table
 st.markdown(f"##### 📊 **RISK BREAKDOWN FOR SELECTED HORIZON ({target_yr})**")
 breakup_df = pd.DataFrame({
     "Exposure Scenario": ["Base Capital Exposure", "Moderate Risk (Expected VaR)", "Severe Risk (Tail CVaR)"],
@@ -305,7 +323,7 @@ st.dataframe(breakup_df, hide_index=True, use_container_width=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 9. NIST Roadmap & Executive Audit Memo
+# 9. Audit Info & Footer
 col_tbl, col_audit = st.columns([1, 1])
 
 with col_tbl:
