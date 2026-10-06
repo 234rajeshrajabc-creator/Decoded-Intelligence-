@@ -3,82 +3,144 @@ import pandas as pd
 import numpy as np
 import plotly.graph_objects as go
 
-# 1. Page Configuration & Institutional Layout
+# 1. Page Configuration
 st.set_page_config(
-    page_title="Decoded Intelligence | PQC Risk Terminal", 
+    page_title="DECODED INTELLIGENCE | Bloomberg Risk Terminal", 
+    page_icon="⚡",
     layout="wide", 
     initial_sidebar_state="expanded"
 )
 
-# 2. Hyper-Pro Custom CSS Engine (Bloomberg Terminal Aesthetics & Smooth Animations)
+# 2. Ultra-Pro Custom CSS (Bloomberg Dark Mode Aesthetic)
 st.markdown("""
     <style>
-    body, .main, .reportview-container {
-        background-color: #05070a !important;
-        color: #e2e8f0 !important;
-        font-family: 'Courier New', Courier, monospace !important;
+    @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;800&display=swap');
+    
+    html, body, .stApp {
+        background-color: #04060a !important;
+        color: #d1d5db !important;
+        font-family: 'JetBrains Mono', monospace !important;
     }
     
-    @keyframes fadeIn {
-        0% { opacity: 0; transform: translateY(10px); }
-        100% { opacity: 1; transform: translateY(0); }
+    ::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
     }
-    .stApp {
-        animation: fadeIn 0.8s ease-out-all;
+    ::-webkit-scrollbar-track { background: #080d1a; }
+    ::-webkit-scrollbar-thumb { background: #00ff66; border-radius: 3px; }
+
+    /* Top Bloomberg Banner */
+    .bloomberg-bar {
+        background: #0d1322;
+        border-bottom: 2px solid #00ff66;
+        padding: 10px 18px;
+        margin-bottom: 20px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        border-radius: 4px;
+        box-shadow: 0 0 15px rgba(0, 255, 102, 0.15);
+    }
+    .brand-title {
+        color: #00ff66;
+        font-weight: 800;
+        font-size: 1.4rem;
+        letter-spacing: 2px;
+    }
+    .brand-subtitle {
+        color: #38bdf8;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
     }
 
-    .kpi-container {
-        background: linear-gradient(135deg, #0d1527 0%, #070a12 100%);
+    /* KPI Cards */
+    .kpi-card {
+        background: rgba(13, 19, 34, 0.85);
         border: 1px solid #1e293b;
-        border-radius: 8px;
-        padding: 20px;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
-        margin-bottom: 20px;
-        transition: transform 0.2s;
+        border-left: 4px solid #00ff66;
+        border-radius: 6px;
+        padding: 16px;
+        transition: all 0.25s ease-in-out;
     }
-    .kpi-container:hover {
-        transform: scale(1.02);
-        border-color: #00ff66;
+    .kpi-card:hover {
+        border-color: #00e5ff;
+        box-shadow: 0 0 20px rgba(0, 229, 255, 0.2);
+        transform: translateY(-2px);
     }
-    .kpi-title {
-        color: #94a3b8;
-        font-size: 0.75rem;
+    .kpi-header {
+        color: #64748b;
+        font-size: 0.7rem;
+        font-weight: 600;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        margin-bottom: 8px;
+        letter-spacing: 1px;
     }
-    .kpi-value {
-        font-size: 1.8rem;
-        font-weight: 700;
-        letter-spacing: -0.02em;
+    .kpi-num {
+        font-size: 1.7rem;
+        font-weight: 800;
+        color: #ffffff;
+        margin: 5px 0;
+    }
+    .kpi-sub {
+        font-size: 0.68rem;
+        color: #94a3b8;
+    }
+
+    div[data-testid="stSidebar"] {
+        background-color: #070b14 !important;
+        border-right: 1px solid #1e293b;
     }
     </style>
 """, unsafe_allow_html=True)
 
-# 3. Main Bloomberg-Style Terminal Header
+# 3. Live Moving Ticker Header
 st.markdown("""
-    <div style='border-bottom: 2px solid #00ff66; padding-bottom: 10px; margin-bottom: 25px;'>
-        <span style='background-color: #ff3333; color: white; padding: 3px 8px; font-size: 0.7rem; font-weight: bold; border-radius: 3px; vertical-align: middle;'>LIVE INTEL</span>
-        <h1 style='display: inline; margin-left: 10px; color: #ffffff; font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;'>DECODED INTELLIGENCE // RISK TERMINAL v1.2</h1>
-        <p style='color: #475569; font-size: 0.8rem; margin-top: 5px; margin-left: 5px;'>QUANTITATIVE CRYPTOGRAPHIC DECAY ENGINE • DATA NODE COMPLIANCE: NIST SP 800-224 / S&P GLOBAL INDEX</p>
+    <div style="background-color: #020408; border-bottom: 1px solid #1e293b; overflow: hidden; whitespace: nowrap; box-sizing: border-box; padding: 6px 0; font-size: 0.75rem;">
+        <div style="display: inline-block; padding-left: 100%; animation: ticker 28s linear infinite;">
+            <span style="color: #00ff66; font-weight: bold;">[DECODED INTEL FEED]</span>
+            <span style="color: #94a3b8; margin: 0 15px;">BTC/USD: <b style="color: #00ff66;">$94,250.00 ▲ +2.4%</b></span>
+            <span style="color: #94a3b8; margin: 0 15px;">ETH/USD: <b style="color: #00ff66;">$3,420.50 ▲ +1.8%</b></span>
+            <span style="color: #94a3b8; margin: 0 15px;">PQC THREAT INDEX: <b style="color: #ff3333;">482.10 ▼ -3.2%</b></span>
+            <span style="color: #94a3b8; margin: 0 15px;">US10Y YIELD: <b style="color: #00e5ff;">4.25%</b></span>
+            <span style="color: #94a3b8; margin: 0 15px;">S&P 500: <b style="color: #00ff66;">5,890.12 ▲ +0.5%</b></span>
+            <span style="color: #94a3b8; margin: 0 15px;">SHOR VECTOR THREAT: <b style="color: #ffaa00;">ELEVATED</b></span>
+        </div>
+    </div>
+
+    <style>
+    @keyframes ticker {
+        0% { transform: translate3d(0, 0, 0); }
+        100% { transform: translate3d(-100%, 0, 0); }
+    }
+    </style>
+
+    <div class="bloomberg-bar" style="margin-top: 10px;">
+        <div>
+            <span class="brand-title">DECODED INTELLIGENCE</span>
+            <span style="color: #64748b; margin: 0 8px;">|</span>
+            <span class="brand-subtitle">QUANTITATIVE RISK & PQC DECAY TERMINAL v2.5</span>
+        </div>
+        <div>
+            <span style="background: #ff3333; color: white; padding: 3px 8px; font-size: 0.65rem; font-weight: bold; border-radius: 2px;">WALL STREET INTEL</span>
+            <span style="color: #00ff66; font-size: 0.75rem; margin-left: 10px;">● NODE ACTIVE</span>
+        </div>
     </div>
 """, unsafe_allow_html=True)
 
-# --- SIDEBAR CONTROL PANEL (ADVANCED PARAMS) ---
-st.sidebar.markdown("### 🏢 CORPORATE STRUCTURE")
-asset_value = st.sidebar.number_input("Total Digital Assets Exposure (USD Millions)", min_value=10.0, value=1000.0, step=50.0)
+# 4. Sidebar Controls
+st.sidebar.markdown("### 🏢 **DECODED INTELLIGENCE // PARAMS**")
+asset_value = st.sidebar.number_input("Total Digital Assets Exposure ($M)", min_value=10.0, value=1000.0, step=50.0)
 cost_of_equity = st.sidebar.slider("Baseline Cost of Equity (%)", 4.0, 15.0, 8.5, 0.1)
 debt_weight = st.sidebar.slider("Capital Structure: Debt Weight (%)", 10, 70, 30, 5)
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("### ⚙️ RISK RADAR STRATEGY")
+st.sidebar.markdown("### ⚙️ **WALL STREET THREAT MODEL**")
 strategy = st.sidebar.selectbox(
-    "Select Target Operational Posture",
+    "Target Posture Strategy",
     ("Proactive Transition (ML-KEM Secure)", "Delayed Inertia (Pushed to Q4 2028)", "Systemic Shock (No Active Mitigation)")
 )
 target_year = st.sidebar.slider("Stress-Test Target Horizon", 2026, 2030, 2027)
 
-# --- BACKEND QUANTITATIVE LOGIC ENGINE ---
+# 5. Backend Engine
 def run_institutional_engine(assets, year, path, baseline_equity, d_weight):
     t_factor = max(0.1, (year - 2025) * 1.4)
     tax_rate = 0.25
@@ -96,7 +158,7 @@ def run_institutional_engine(assets, year, path, baseline_equity, d_weight):
         eps_dilution_usd = 0.04 * t_factor
         capex_required = 45.0 if year >= 2028 else 18.0
         status_code = "DEGRADED_COMPLIANCE"
-    else:  # Systemic Shock Case
+    else:
         attack_surface_pb = 580.0 * t_factor
         wacc_premium_bps = int(120 * t_factor) if year < 2027 else int(180 * t_factor)
         eps_dilution_usd = 0.15 * t_factor if year < 2027 else 0.48 * t_factor
@@ -113,104 +175,101 @@ def run_institutional_engine(assets, year, path, baseline_equity, d_weight):
     
     return attack_surface_pb, wacc_premium_bps, eps_dilution_usd, capex_required, computed_wacc * 100, implied_balance_sheet_loss, status_code
 
-# Execute Data Logic
 pb_exposed, bps_premium, eps_diluted, capex_vol, repriced_wacc, metrics_loss, code = run_institutional_engine(
     asset_value, target_year, strategy, cost_of_equity, debt_weight
 )
 
-# --- PROP LAYOUT DISPLAY: RAW MATRICES ---
-col1, col2, col3, col4 = st.columns(4)
+# 6. KPI Grid
+c1, c2, c3, c4 = st.columns(4)
 
-with col1:
+with c1:
     st.markdown(f"""
-        <div class='kpi-container'>
-            <div class='kpi-title'>🛡️ Quantum Attack Surface</div>
-            <div class='kpi-value' style='color: {"#00ff66" if pb_exposed == 0 else "#f43f5e"};'>{pb_exposed:.1f} PB</div>
-            <div style='font-size: 0.7rem; margin-top: 5px; color: #64748b;'>HNDL Vector Exposure Area</div>
+        <div class="kpi-card" style="border-left-color: {'#00ff66' if pb_exposed == 0 else '#ff3333'};">
+            <div class="kpi-header">Quantum Surface Exposure</div>
+            <div class="kpi-num" style="color: {'#00ff66' if pb_exposed == 0 else '#ff3333'};">{pb_exposed:.1f} PB</div>
+            <div class="kpi-sub">HNDL Vector Data Threat</div>
         </div>
     """, unsafe_allow_html=True)
 
-with col2:
+with c2:
     st.markdown(f"""
-        <div class='kpi-container'>
-            <div class='kpi-title'>📊 Re-Priced WACC Baseline</div>
-            <div class='kpi-value' style='color: #00e5ff;'>{repriced_wacc:.2f}%</div>
-            <div style='font-size: 0.7rem; margin-top: 5px; color: #ffaa00;'>+{bps_premium} bps Equity Add-on</div>
+        <div class="kpi-card" style="border-left-color: #00e5ff;">
+            <div class="kpi-header">Re-Priced WACC Risk</div>
+            <div class="kpi-num" style="color: #00e5ff;">{repriced_wacc:.2f}%</div>
+            <div class="kpi-sub">+{bps_premium} bps Equity Risk Add-on</div>
         </div>
     """, unsafe_allow_html=True)
 
-with col3:
+with c3:
     st.markdown(f"""
-        <div class='kpi-container'>
-            <div class='kpi-title'>📉 Quarterly EPS Dilution</div>
-            <div class='kpi-value' style='color: {"#00ff66" if eps_diluted == 0 else "#f43f5e"};'>-${eps_diluted:.2f}</div>
-            <div style='font-size: 0.7rem; margin-top: 5px; color: #64748b;'>Impact on Asset Velocity</div>
+        <div class="kpi-card" style="border-left-color: {'#00ff66' if eps_diluted == 0 else '#ffaa00'};">
+            <div class="kpi-header">Quarterly EPS Dilution</div>
+            <div class="kpi-num" style="color: {'#00ff66' if eps_diluted == 0 else '#ffaa00'};">-${eps_diluted:.2f}</div>
+            <div class="kpi-sub">Impact on Capital Velocity</div>
         </div>
     """, unsafe_allow_html=True)
 
-with col4:
+with c4:
     st.markdown(f"""
-        <div class='kpi-container'>
-            <div class='kpi-title'>⚡ Spot Procurement CapEx</div>
-            <div class='kpi-value' style='color: #ffffff;'>${capex_vol:.1f}M</div>
-            <div style='font-size: 0.7rem; margin-top: 5px; color: #64748b;'>Required Mitigation Capital</div>
+        <div class="kpi-card" style="border-left-color: #ffffff;">
+            <div class="kpi-header">Required CapEx Allocation</div>
+            <div class="kpi-num">${capex_vol:.1f}M</div>
+            <div class="kpi-sub">Spot Mitigation Capital</div>
         </div>
     """, unsafe_allow_html=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# --- HIGH-TECH CHARTING SUITE (FIXED DATA ARRAY VALUES) ---
-col_left, col_right = st.columns(2)
+# 7. Analytics & Charts
+col_left, col_right = st.columns([1.2, 0.8])
 
 with col_left:
-    st.markdown("<h3 style='color: #ffffff; font-size: 1.1rem; letter-spacing: 0.05em;'>📈 CRYPTOGRAPHIC DECAY VELOCITY CURVE</h3>", unsafe_allow_html=True)
+    st.markdown("##### 📈 **DECODED INTELLIGENCE // RISK CURVE VELOCITY**")
     years_arr = ["2026", "2027", "2028", "2029", "2030"]
     
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=years_arr, y=[0, 0, 0, 0, 0], name='Proactive (ML-KEM)', line=dict(color='#00ff66', width=3)))
-    fig.add_trace(go.Scatter(x=years_arr, y=[420, 588, 823, 1152, 1612], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
-    fig.add_trace(go.Scatter(x=years_arr, y=[580, 1100, 2400, 3100, 4500], name='Systemic Shock', line=dict(color='#ff3333', width=4)))
+    fig.add_trace(go.Scatter(x=years_arr, y=[420, 890, 1280, 1280, 1280], name='Delayed Inertia', line=dict(color='#ffaa00', width=2, dash='dash')))
+    fig.add_trace(go.Scatter(x=years_arr, y=[420, 1100, 2400, 3100, 4500], name='Systemic Shock', line=dict(color='#ff3333', width=3)))
     
     fig.update_layout(
         template="plotly_dark", 
         paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(0,0,0,0)',
-        xaxis_title="Timeline Target", 
-        yaxis_title="Petabytes Exposed",
+        plot_bgcolor='rgba(7, 11, 20, 0.8)',
+        xaxis=dict(showgrid=True, gridcolor='#1e293b'),
+        yaxis=dict(title="Petabytes Exposed", showgrid=True, gridcolor='#1e293b'),
         margin=dict(l=20, r=20, t=20, b=20),
-        height=340
+        height=320,
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1)
     )
     st.plotly_chart(fig, use_container_width=True)
 
 with col_right:
-    st.markdown("<h3 style='color: #ffffff; font-size: 1.1rem; letter-spacing: 0.05em;'>🎛️ PORTFOLIO SENSITIVITY SHOCK GRID</h3>", unsafe_allow_html=True)
+    st.markdown("##### 🎛️ **SENSITIVITY MATRIX SHOCK GRID**")
     sensitivity_data = pd.DataFrame({
-        "Asset Group Base": [f"${asset_value:.0f}M", f"${asset_value:.0f}M", f"${asset_value:.0f}M"],
-        "Threat Model Applied": ["Proactive Curve", "Inertia Delay Path", "Shor Matrix System Shock"],
-        "Implied Balance Sheet Shock": [
-            "$0.00 (Protected)", 
+        "Asset Base": [f"${asset_value:.0f}M", f"${asset_value:.0f}M", f"${asset_value:.0f}M"],
+        "Threat Vector": ["Proactive Curve", "Inertia Delay Path", "Shor Matrix System Shock"],
+        "Implied Loss": [
+            "$0.00 (Immune)", 
             f"${metrics_loss*0.65:.1f} Million", 
-            f"${metrics_loss:.1f} Million (Extreme Risk)"
+            f"${metrics_loss:.1f} Million"
         ]
     })
-    st.table(sensitivity_data)
+    st.dataframe(sensitivity_data, hide_index=True, use_container_width=True)
 
-# --- IF-THEN ADVANCED SYSTEM DIAGNOSTIC MEMOS ---
-st.markdown("<br>", unsafe_allow_html=True)
-st.markdown("<h3 style='color: #ffffff; font-size: 1.1rem; letter-spacing: 0.05em;'>📋 EXECUTABLE DIAGNOSTIC MEMO</h3>", unsafe_allow_html=True)
+# 8. Diagnostic Memo
+st.markdown("##### 📋 **EXECUTIVE MEMORANDUM // DECODED INTELLIGENCE AUDIT**")
 
 if code == "OPTIMAL_ALPHA":
-    st.markdown(f"""
-        <div style='background-color: rgba(0, 255, 102, 0.05); border: 1px solid #00ff66; padding: 15px; border-radius: 6px;'>
-            <strong style='color: #00ff66;'>[CRITICAL POSTURE: OPTIMAL LOCK]</strong> Capital architecture fully optimized. Repriced WACC settled at <strong>{repriced_wacc:.2f}%</strong>. System balance sheet reflects absolute immunity against legacy encryption compromises.
-        </div>
-    """, unsafe_allow_html=True)
+    st.success(f"**[DECODED INTEL - OPTIMAL ALPHA LOCK]** Capital architecture is fully optimized against quantum decryption vectors. Repriced WACC: {repriced_wacc:.2f}%. Zero balance sheet risk recorded.")
 elif code == "DEGRADED_COMPLIANCE":
-    st.markdown(f"""
-        <div style='background-color: rgba(255, 170, 0, 0.05); border: 1px solid #ffaa00; padding: 15px; border-radius: 6px;'>
-            <strong style='color: #ffaa00;'>[WARNING: DEGRADED COMPLIANCE]</strong> <strong>IF</strong> infrastructure inertia remains unmitigated past {target_year}, <strong>THEN</strong> quantitative matrices project an unpriced corporate vulnerability accumulation resulting in an estimated <strong>${metrics_loss:.2f} Million</strong> retroactive ledger asset risk.
-        </div>
-    """, unsafe_allow_html=True)
+    st.warning(f"**[DECODED INTEL - DEGRADED COMPLIANCE]** Infrastructure inertia active for horizon {target_year}. Projected unpriced corporate asset vulnerability accumulation: **${metrics_loss:.2f} Million**.")
 else:
-    st.markdown(f"""
-        <div style='background-color: rgba(255, 51, 51, 0.05); border: 1px solid #ff3333; padding: 15px; border-radius: 6px;'>
+    st.error(f"**[DECODED INTEL - CRITICAL SYSTEMIC SHOCK]** ZERO mitigation strategy exposes total corporate assets. Projected balance sheet exposure: **${metrics_loss:.2f} Million** by {target_year}.")
+
+# 9. Institutional Footer
+st.markdown("""
+    <div style="border-top: 1px solid #1e293b; padding-top: 15px; margin-top: 30px; text-align: center; color: #475569; font-size: 0.7rem;">
+        POWERED BY <strong>DECODED INTELLIGENCE</strong> INSTITUTIONAL QUANT ENGINE • COMPLIANT WITH NIST SP 800-224 STANDARDS
+    </div>
+""", unsafe_allow_html=True)
