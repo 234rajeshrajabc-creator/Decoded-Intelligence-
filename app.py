@@ -31,6 +31,12 @@ st.markdown("""
         border-right: 1px solid #1e293b !important;
     }
 
+    [data-testid="stForm"] {
+        border: none !important;
+        padding: 0px !important;
+        background: transparent !important;
+    }
+
     .brand-container {
         background: #0b111c;
         border: 1px solid #1e293b;
@@ -123,41 +129,48 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. Clean Sidebar Controls
+# 4. Form Wrapped Sidebar Inputs (Triggers Instant Recalculation)
 st.sidebar.markdown("### 🏢 **INSTITUTIONAL PARAMS**")
 
-asset_val = st.sidebar.number_input("Total Asset Exposure ($M)", min_value=10.0, value=1250.0, step=50.0)
-cost_equity = st.sidebar.slider("Cost of Equity (%)", 4.0, 15.0, 12.2, 0.1)
-debt_wt = st.sidebar.slider("Debt Weight (%)", 10, 70, 30, 5)
+with st.sidebar.form(key="model_controls_form"):
+    asset_val = st.number_input("Total Asset Exposure ($M)", min_value=10.0, value=1250.0, step=50.0)
+    cost_equity = st.slider("Cost of Equity (%)", 4.0, 25.0, 12.2, 0.1)
+    debt_wt = st.slider("Debt Weight (%)", 10, 90, 30, 5)
 
-st.sidebar.markdown("---")
-st.sidebar.markdown("### 🎯 **TIMELINE HORIZON**")
-target_yr = st.sidebar.slider("Target Horizon Year", 2026, 2035, 2033)
+    st.markdown("---")
+    st.markdown("### 🎯 **TIMELINE HORIZON**")
+    target_yr = st.slider("Target Horizon Year", 2026, 2035, 2033)
 
-submit_button = st.sidebar.button(label="SUBMIT")
+    submit_button = st.form_submit_button(label="SUBMIT")
 
 def format_currency(value_millions):
     if value_millions >= 1000:
         return f"${value_millions/1000:.2f}B"
     return f"${value_millions:.1f}M"
 
-# 5. Calculation Logic
+# 5. Dynamic Calculation Logic (Directly Dependent on Inputs)
 years = np.arange(2026, 2036)
 
 d_wt = debt_wt / 100.0
-e_wt = (100 - debt_wt) / 100.0
+e_wt = (100.0 - debt_wt) / 100.0
 after_tax_debt = 0.05 * (1 - 0.25)
+
+# Dynamic WACC calculation
 wacc_base = ((cost_equity / 100.0) * e_wt) + (after_tax_debt * d_wt)
 
+# Risk factor dynamically adjusted by WACC and parameters
+risk_multiplier_mod = 0.12 + (cost_equity / 100.0) * 0.25
+risk_multiplier_sev = 0.18 + (cost_equity / 100.0) * 0.40
+
 baseline_exposure = np.full_like(years, asset_val, dtype=float)
-moderate_shock = asset_val * (1 + 0.15)**(years - 2025)
-severe_shock = asset_val * (1 + 0.24)**(years - 2025)
+moderate_shock = asset_val * (1 + risk_multiplier_mod)**(years - 2025)
+severe_shock = asset_val * (1 + risk_multiplier_sev)**(years - 2025)
 
 index_target = target_yr - 2026
 var_loss = moderate_shock[index_target] - asset_val
 cvar_loss = severe_shock[index_target] - asset_val
 
-# 6. KPI Dashboard Cards
+# 6. KPI Dashboard Cards (Recalculates on Submit)
 c1, c2, c3, c4 = st.columns(4)
 
 with c1:
@@ -198,7 +211,7 @@ with c4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 7. Left-Aligned Full Chart with Zoom Controls Enabled
+# 7. High-Performance Graph (Connected to Live Inputs)
 st.markdown("##### 📈 **QUANTUM RISK EXPOSURE PROJECTION (2026 - 2035)**")
 
 fig = go.Figure()
@@ -247,7 +260,7 @@ fig.add_vline(
     annotation_font=dict(color="#00ff66", size=13, family="JetBrains Mono")
 )
 
-# Layout Setup - Left Aligned Legend
+# Responsive Layout & Left-Aligned Controls
 fig.update_layout(
     template="plotly_dark",
     paper_bgcolor='rgba(0,0,0,0)',
@@ -273,7 +286,6 @@ fig.update_layout(
     )
 )
 
-# Axis Customization - Clean Whole Number Formatting
 fig.update_xaxes(
     title_text="Year", 
     title_font=dict(color="#ffffff", size=12),
@@ -293,15 +305,13 @@ fig.update_yaxes(
     tickformat="$,.0f"
 )
 
-# Enabled Plus/Minus Zoom Toolbar Bar
 st.plotly_chart(
     fig, 
     use_container_width=True, 
     config={
         'displayModeBar': True,
         'scrollZoom': True,
-        'displaylogo': False,
-        'modeBarButtonsToAdd': ['drawline', 'drawopenpath', 'eraseshape']
+        'displaylogo': False
     }
 )
 
@@ -316,11 +326,11 @@ st.dataframe(breakup_df, hide_index=True, use_container_width=True)
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 9. Audit Info & Footer
+# 9. Audit Info
 col_tbl, col_audit = st.columns([1, 1])
 
 with col_tbl:
-    st.markdown("##### 🛡️️ **RECOMMENDED NIST MIGRATION**")
+    st.markdown("##### 🛡️ **RECOMMENDED NIST MIGRATION**")
     roadmap_df = pd.DataFrame({
         "Asset Layer": ["Key Stores", "PKI Infrastructure", "API/TLS Comm"],
         "Target Standard": ["ML-KEM (Kyber)", "ML-DSA (Dilithium)", "SLH-DSA"],
@@ -330,7 +340,7 @@ with col_tbl:
 
 with col_audit:
     st.markdown("##### 📋 **DECODED INTELLIGENCE AUDIT**")
-    st.info(f"**[EXECUTIVE SUMMARY]:** Selected target horizon **{target_yr}** projects an expected capital loss of **{format_currency(var_loss)}** under Moderate Risk and **{format_currency(cvar_loss)}** under Severe Tail Risk scenarios.")
+    st.info(f"**[EXECUTIVE SUMMARY]:** Selected target horizon **{target_yr}** projects an expected capital loss of **{format_currency(var_loss)}** under Moderate Risk and **{format_currency(cvar_loss)}** under Severe Tail Risk scenarios with baseline WACC at **{wacc_base*100:.2f}%**.")
 
 # Footer
 st.markdown("""
