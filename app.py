@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. Institutional Dark Theme CSS
+# 2. Institutional Dark Theme CSS (Mobile Responsive Fixes)
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -98,7 +98,7 @@ st.markdown("""
         <div>
             <span class="brand-title">DECODED INTELLIGENCE</span>
             <span style="color: #475569; margin: 0 8px;">/</span>
-            <span style="color: #94a3b8; font-size: 0.85rem; font-weight: 600;">QUANTUM DECAY & RISK PROJECTION ENGINE</span>
+            <span style="color: #94a3b8; font-size: 0.85rem; font-weight: 600;">QUANTUM DECAY & STOCHASTIC PROJECTION ENGINE</span>
         </div>
         <div>
             <span class="brand-tag">NIST SP 800-224 COMPLIANT</span>
@@ -123,20 +123,20 @@ def format_currency(value_millions):
 
 # 5. Risk Computation Engine
 years = np.arange(2026, 2036)
-years_left = max(1, target_yr - 2025)
 
 d_wt = debt_wt / 100.0
 e_wt = (100 - debt_wt) / 100.0
 after_tax_debt = 0.05 * (1 - 0.25)
 wacc_base = ((cost_equity / 100.0) * e_wt) + (after_tax_debt * d_wt)
 
-decay_rate = 0.18
-quantum_risk_projection = asset_val * (1 + decay_rate)**(years - 2025) - asset_val
+# 3 Scenarios
 baseline_exposure = np.full_like(years, asset_val, dtype=float)
+moderate_shock = asset_val * (1 + 0.15)**(years - 2025)
+severe_shock = asset_val * (1 + 0.24)**(years - 2025)
 
 index_target = target_yr - 2026
-var_loss = quantum_risk_projection[index_target]
-cvar_loss = var_loss * 1.25
+var_loss = moderate_shock[index_target] - asset_val
+cvar_loss = severe_shock[index_target] - asset_val
 
 # 6. KPI Dashboard
 c1, c2, c3, c4 = st.columns(4)
@@ -153,25 +153,25 @@ with c1:
 with c2:
     st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-label">Value at Risk (VaR)</div>
-            <div class="kpi-value" style="color: #f43f5e;">{format_currency(var_loss)}</div>
-            <div class="kpi-foot">Max Expected Loss ({target_yr})</div>
+            <div class="kpi-label">Expected VaR</div>
+            <div class="kpi-value" style="color: #fba518;">{format_currency(var_loss)}</div>
+            <div class="kpi-foot">Moderate Scenario ({target_yr})</div>
         </div>
     """, unsafe_allow_html=True)
 
 with c3:
     st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-label">Conditional VaR (CVaR)</div>
-            <div class="kpi-value" style="color: #ff3333;">{format_currency(cvar_loss)}</div>
-            <div class="kpi-foot">Tail-Risk Worst-Case Loss</div>
+            <div class="kpi-label">Tail-Risk CVaR</div>
+            <div class="kpi-value" style="color: #f43f5e;">{format_currency(cvar_loss)}</div>
+            <div class="kpi-foot">Severe Worst Case ({target_yr})</div>
         </div>
     """, unsafe_allow_html=True)
 
 with c4:
     st.markdown(f"""
         <div class="kpi-card">
-            <div class="kpi-label">CRQC Estimated Horizon</div>
+            <div class="kpi-label">CRQC Horizon</div>
             <div class="kpi-value" style="color: #00ff66;">{max(0, 2030 - target_yr)} Yrs</div>
             <div class="kpi-foot">Shor Algorithm Window</div>
         </div>
@@ -179,48 +179,76 @@ with c4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 7. Safe Plotly Analytics
-col_left, col_right = st.columns([1.3, 0.7])
+# 7. Interactive Multi-Scenario Plotly Chart
+st.markdown("##### 📈 **STOCHASTIC QUANTUM EXPOSURE PROJECTION (2026 - 2035)**")
 
-with col_left:
-    st.markdown("##### 📈 **QUANTUM RISK DECAY PROJECTION (2026 - 2035)**")
-    
-    fig = go.Figure()
+fig = go.Figure()
 
-    fig.add_trace(go.Scatter(
-        x=years, 
-        y=baseline_exposure, 
-        mode='lines',
-        name='Base Capital Exposure',
-        line=dict(color='#38bdf8', width=2, dash='dot')
-    ))
+# Line 1: Baseline
+fig.add_trace(go.Scatter(
+    x=years, 
+    y=baseline_exposure, 
+    mode='lines+markers',
+    name='Base Capital Exposure',
+    line=dict(color='#38bdf8', width=2, dash='dot'),
+    hovertemplate='Year: %{x}<br>Base Asset: $%{y:.1f}M<extra></extra>'
+))
 
-    fig.add_trace(go.Scatter(
-        x=years, 
-        y=quantum_risk_projection + asset_val, 
-        mode='lines+markers',
-        name='Quantum Risk Exposure',
-        line=dict(color='#f43f5e', width=3),
-        marker=dict(size=6, color='#f43f5e')
-    ))
+# Line 2: Moderate Shock
+fig.add_trace(go.Scatter(
+    x=years, 
+    y=moderate_shock, 
+    mode='lines+markers',
+    name='Moderate Risk Exposure',
+    line=dict(color='#fba518', width=3),
+    marker=dict(size=7),
+    hovertemplate='Year: %{x}<br>Moderate Exposure: $%{y:.1f}M<extra></extra>'
+))
 
-    # Simplified Layout Parameters
-    fig.update_layout(
-        template="plotly_dark",
-        paper_bgcolor='rgba(0,0,0,0)',
-        plot_bgcolor='rgba(11, 17, 28, 0.8)',
-        height=340,
-        margin=dict(l=10, r=10, t=10, b=10)
-    )
-    
-    fig.update_xaxes(title_text="Year", showgrid=True, gridcolor='#1e293b', dtick=1)
-    fig.update_yaxes(title_text="Asset Value ($M)", showgrid=True, gridcolor='#1e293b')
+# Line 3: Severe Shock
+fig.add_trace(go.Scatter(
+    x=years, 
+    y=severe_shock, 
+    mode='lines+markers',
+    name='Severe Tail Risk (CVaR)',
+    line=dict(color='#f43f5e', width=3, dash='dash'),
+    marker=dict(size=7),
+    hovertemplate='Year: %{x}<br>Severe Exposure: $%{y:.1f}M<extra></extra>'
+))
 
-    st.plotly_chart(fig, use_container_width=True)
+# Layout Fixes for Mobile & Interaction Lock
+fig.update_layout(
+    template="plotly_dark",
+    paper_bgcolor='rgba(0,0,0,0)',
+    plot_bgcolor='rgba(11, 17, 28, 0.8)',
+    height=420,
+    autosize=True,
+    margin=dict(l=15, r=15, t=30, b=30),
+    hovermode="x unified",
+    legend=dict(
+        orientation="h",
+        yanchor="bottom",
+        y=1.02,
+        xanchor="center",
+        x=0.5,
+        font=dict(size=11)
+    ),
+    dragmode=False # Touch drag gayab hone se rokne ke liye
+)
 
-with col_right:
+fig.update_xaxes(title_text="Year", showgrid=True, gridcolor='#1e293b', dtick=1)
+fig.update_yaxes(title_text="Asset Exposure ($M)", showgrid=True, gridcolor='#1e293b')
+
+# Render Chart in full width
+st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False, 'scrollZoom': False})
+
+st.markdown("<br>", unsafe_allow_html=True)
+
+# 8. NIST Roadmap Table & Audit
+col_tbl, col_audit = st.columns([1, 1])
+
+with col_tbl:
     st.markdown("##### 🛡️ **RECOMMENDED NIST MIGRATION**")
-    
     roadmap_df = pd.DataFrame({
         "Asset Layer": ["Key Stores", "PKI Infrastructure", "API/TLS Comm"],
         "Target Standard": ["ML-KEM (Kyber)", "ML-DSA (Dilithium)", "SLH-DSA"],
@@ -228,9 +256,9 @@ with col_right:
     })
     st.dataframe(roadmap_df, hide_index=True, use_container_width=True)
 
-# 8. Audit Memo
-st.markdown("##### 📋 **DECODED INTELLIGENCE AUDIT SUMMARY**")
-st.info(f"**[EXECUTIVE SUMMARY]:** Projected risk analysis shows potential capital impact reaching **{format_currency(var_loss)}** by **{target_yr}**. Transitioning to NIST Post-Quantum Cryptography standards recommended immediately.")
+with col_audit:
+    st.markdown("##### 📋 **DECODED INTELLIGENCE AUDIT**")
+    st.info(f"**[EXECUTIVE SUMMARY]:** Target horizon **{target_yr}** shows expected capital shock of **{format_currency(var_loss)}** under Moderate Risk and **{format_currency(cvar_loss)}** under Severe Tail Risk scenarios.")
 
 # Footer
 st.markdown("""
