@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. Complete Dark Institutional CSS Overhaul
+# 2. Institutional Styling CSS
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -26,17 +26,9 @@ st.markdown("""
         font-family: 'JetBrains Mono', monospace !important;
     }
 
-    /* Override Sidebar Dark Theme */
     section[data-testid="stSidebar"] {
         background-color: #0b111c !important;
         border-right: 1px solid #1e293b !important;
-    }
-    
-    /* Remove standard form border & white backgrounds */
-    [data-testid="stForm"] {
-        border: none !important;
-        padding: 0px !important;
-        background: transparent !important;
     }
 
     .brand-container {
@@ -96,7 +88,6 @@ st.markdown("""
         color: #94a3b8;
     }
 
-    /* Custom Stylish SUBMIT Button */
     div.stButton > button {
         background: linear-gradient(135deg, #00ff66 0%, #00cc52 100%) !important;
         color: #06090e !important;
@@ -132,10 +123,10 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. Clean Sidebar (Direct Controls without form wrapper to remove "Press Enter" hint)
+# 4. Clean Sidebar Controls
 st.sidebar.markdown("### 🏢 **INSTITUTIONAL PARAMS**")
 
-asset_val = st.sidebar.number_input("Total Asset Exposure ($M)", min_value=10.0, value=1250.0, step=50.0, help="Enter asset value in Millions")
+asset_val = st.sidebar.number_input("Total Asset Exposure ($M)", min_value=10.0, value=1250.0, step=50.0)
 cost_equity = st.sidebar.slider("Cost of Equity (%)", 4.0, 15.0, 12.2, 0.1)
 debt_wt = st.sidebar.slider("Debt Weight (%)", 10, 70, 30, 5)
 
@@ -207,12 +198,12 @@ with c4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 7. High-Performance Pro Plotly Chart
+# 7. Left-Aligned Full Chart with Zoom Controls Enabled
 st.markdown("##### 📈 **QUANTUM RISK EXPOSURE PROJECTION (2026 - 2035)**")
 
 fig = go.Figure()
 
-# Base Exposure Line
+# Line 1: Base Exposure
 fig.add_trace(go.Scatter(
     x=years, 
     y=baseline_exposure, 
@@ -220,10 +211,10 @@ fig.add_trace(go.Scatter(
     name='Base Capital Exposure',
     line=dict(color='#38bdf8', width=2, dash='dot'),
     marker=dict(size=6),
-    hovertemplate='Year: %{x}<br>Base Asset: $%{y:.1f}M<extra></extra>'
+    hovertemplate='Year: %{x}<br>Base Asset: $%{y:,.0f}M<extra></extra>'
 ))
 
-# Moderate Risk Line
+# Line 2: Moderate Risk
 fig.add_trace(go.Scatter(
     x=years, 
     y=moderate_shock, 
@@ -231,10 +222,10 @@ fig.add_trace(go.Scatter(
     name='Moderate Risk Exposure',
     line=dict(color='#fba518', width=3),
     marker=dict(size=7),
-    hovertemplate='Year: %{x}<br>Moderate: $%{y:.1f}M<extra></extra>'
+    hovertemplate='Year: %{x}<br>Moderate Risk: $%{y:,.0f}M<extra></extra>'
 ))
 
-# Severe Risk Line
+# Line 3: Severe Tail Risk
 fig.add_trace(go.Scatter(
     x=years, 
     y=severe_shock, 
@@ -242,7 +233,7 @@ fig.add_trace(go.Scatter(
     name='Severe Tail Risk (CVaR)',
     line=dict(color='#f43f5e', width=3, dash='dash'),
     marker=dict(size=7),
-    hovertemplate='Year: %{x}<br>Severe: $%{y:.1f}M<extra></extra>'
+    hovertemplate='Year: %{x}<br>Severe Risk: $%{y:,.0f}M<extra></extra>'
 ))
 
 # Highlight Target Vertical Line
@@ -256,14 +247,14 @@ fig.add_vline(
     annotation_font=dict(color="#00ff66", size=13, family="JetBrains Mono")
 )
 
-# Responsive Layout & High Visibility Text
+# Layout Setup - Left Aligned Legend
 fig.update_layout(
     template="plotly_dark",
     paper_bgcolor='rgba(0,0,0,0)',
     plot_bgcolor='rgba(11, 17, 28, 0.95)',
     height=450,
     autosize=True,
-    margin=dict(l=15, r=15, t=50, b=20),
+    margin=dict(l=10, r=10, t=40, b=10),
     hovermode="x unified",
     hoverlabel=dict(
         bgcolor="#0b111c",
@@ -272,17 +263,17 @@ fig.update_layout(
         font_color="#ffffff"
     ),
     legend=dict(
-        orientation="h",
-        yanchor="bottom",
-        y=1.05,
+        orientation="v",
+        yanchor="top",
+        y=0.98,
         xanchor="left",
-        x=0.0,
+        x=0.02,
         font=dict(size=11, color="#ffffff"),
-        bgcolor="rgba(0,0,0,0)"
+        bgcolor="rgba(11, 17, 28, 0.7)"
     )
 )
 
-# Axis Customization with Clear White Text
+# Axis Customization - Clean Whole Number Formatting
 fig.update_xaxes(
     title_text="Year", 
     title_font=dict(color="#ffffff", size=12),
@@ -298,17 +289,19 @@ fig.update_yaxes(
     title_font=dict(color="#ffffff", size=12),
     tickfont=dict(color="#ffffff", size=11),
     showgrid=True, 
-    gridcolor='#1e293b'
+    gridcolor='#1e293b',
+    tickformat="$,.0f"
 )
 
-# Pro Touch Interactive Chart Configuration
+# Enabled Plus/Minus Zoom Toolbar Bar
 st.plotly_chart(
     fig, 
     use_container_width=True, 
     config={
+        'displayModeBar': True,
         'scrollZoom': True,
-        'displayModeBar': False,
-        'responsive': True
+        'displaylogo': False,
+        'modeBarButtonsToAdd': ['drawline', 'drawopenpath', 'eraseshape']
     }
 )
 
@@ -327,7 +320,7 @@ st.markdown("<br>", unsafe_allow_html=True)
 col_tbl, col_audit = st.columns([1, 1])
 
 with col_tbl:
-    st.markdown("##### 🛡️ **RECOMMENDED NIST MIGRATION**")
+    st.markdown("##### 🛡️️ **RECOMMENDED NIST MIGRATION**")
     roadmap_df = pd.DataFrame({
         "Asset Layer": ["Key Stores", "PKI Infrastructure", "API/TLS Comm"],
         "Target Standard": ["ML-KEM (Kyber)", "ML-DSA (Dilithium)", "SLH-DSA"],
