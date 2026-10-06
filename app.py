@@ -267,4 +267,28 @@ fig.update_yaxes(title_text="Asset Exposure ($M)", showgrid=True, gridcolor='#1e
 
 st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': False})
 
-st.markdown("<br
+st.markdown("<br>", unsafe_allow_html=True)
+
+# 8. NIST Roadmap Table & Audit
+col_tbl, col_audit = st.columns([1, 1])
+
+with col_tbl:
+    st.markdown("##### 🛡️ **RECOMMENDED NIST MIGRATION**")
+    roadmap_df = pd.DataFrame({
+        "Asset Layer": ["Key Stores", "PKI Infrastructure", "API/TLS Comm"],
+        "Target Standard": ["ML-KEM (Kyber)", "ML-DSA (Dilithium)", "SLH-DSA"],
+        "Status": ["CRITICAL", "HIGH", "MEDIUM"]
+    })
+    st.dataframe(roadmap_df, hide_index=True, use_container_width=True)
+
+with col_audit:
+    st.markdown("##### 📋 **DECODED INTELLIGENCE AUDIT**")
+    st.info(f"**[EXECUTIVE SUMMARY]:** Target horizon **{target_yr}** shows expected capital shock of **{format_currency(var_loss)}** under Moderate Risk and **{format_currency(cvar_loss)}** under Severe Tail Risk scenarios.")
+
+# Footer
+st.markdown("""
+    <hr style="border-color: #1e293b; margin-top: 30px;">
+    <div style="text-align: center; color: #475569; font-size: 0.75rem;">
+        DECODED INTELLIGENCE © 2026 • QUANTITATIVE RISK SYSTEM FOR INSTITUTIONAL ASSET MANAGEMENT
+    </div>
+""", unsafe_allow_html=True)
