@@ -11,7 +11,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# 2. Institutional Bloomberg Dark CSS
+# 2. Institutional Dark Theme CSS
 st.markdown("""
     <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
@@ -58,7 +58,7 @@ st.markdown("""
         border: 1px solid rgba(0, 255, 102, 0.2);
     }
 
-    /* KPI Metrics Cards */
+    /* KPI Cards */
     .kpi-card {
         background: #0b111c;
         border: 1px solid #1e293b;
@@ -106,7 +106,7 @@ st.markdown("""
     </div>
 """, unsafe_allow_html=True)
 
-# 4. Sidebar Options
+# 4. Sidebar Controls
 st.sidebar.markdown("### 🏢 **INSTITUTIONAL PARAMS**")
 asset_val = st.sidebar.number_input("Total Asset Exposure ($M)", min_value=10.0, value=1000.0, step=50.0)
 cost_equity = st.sidebar.slider("Cost of Equity (%)", 4.0, 15.0, 8.5, 0.1)
@@ -116,28 +116,24 @@ st.sidebar.markdown("---")
 st.sidebar.markdown("### 🎯 **TIMELINE HORIZON**")
 target_yr = st.sidebar.slider("Target Horizon Year", 2026, 2035, 2028)
 
-# Helper function to format large values nicely
 def format_currency(value_millions):
     if value_millions >= 1000:
         return f"${value_millions/1000:.2f}B"
     return f"${value_millions:.1f}M"
 
-# 5. Math & Line Projection Engine
+# 5. Risk Computation Engine
 years = np.arange(2026, 2036)
 years_left = max(1, target_yr - 2025)
 
-# Capital WACC
 d_wt = debt_wt / 100.0
 e_wt = (100 - debt_wt) / 100.0
 after_tax_debt = 0.05 * (1 - 0.25)
 wacc_base = ((cost_equity / 100.0) * e_wt) + (after_tax_debt * d_wt)
 
-# Clean Exponential Curve Projection for line graph
 decay_rate = 0.18
 quantum_risk_projection = asset_val * (1 + decay_rate)**(years - 2025) - asset_val
 baseline_exposure = np.full_like(years, asset_val, dtype=float)
 
-# Metric Calculations for selected target year
 index_target = target_yr - 2026
 var_loss = quantum_risk_projection[index_target]
 cvar_loss = var_loss * 1.25
@@ -183,7 +179,7 @@ with c4:
 
 st.markdown("<br>", unsafe_allow_html=True)
 
-# 7. Clean Line Chart & PQC Roadmap
+# 7. Safe Plotly Analytics
 col_left, col_right = st.columns([1.3, 0.7])
 
 with col_left:
@@ -191,7 +187,6 @@ with col_left:
     
     fig = go.Figure()
 
-    # Smooth Line 1: Baseline Asset
     fig.add_trace(go.Scatter(
         x=years, 
         y=baseline_exposure, 
@@ -200,26 +195,27 @@ with col_left:
         line=dict(color='#38bdf8', width=2, dash='dot')
     ))
 
-    # Smooth Line 2: Quantum Risk Exposure
     fig.add_trace(go.Scatter(
         x=years, 
         y=quantum_risk_projection + asset_val, 
         mode='lines+markers',
-        name='Quantum Risk Adjusted Exposure',
+        name='Quantum Risk Exposure',
         line=dict(color='#f43f5e', width=3),
         marker=dict(size=6, color='#f43f5e')
     ))
 
+    # Simplified Layout Parameters
     fig.update_layout(
         template="plotly_dark",
         paper_bgcolor='rgba(0,0,0,0)',
         plot_bgcolor='rgba(11, 17, 28, 0.8)',
-        xaxis=dict(title="Year", showgrid=True, gridcolor='#1e293b', dtick=1),
-        yaxis=dict(title="Asset Risk Value ($ Millions)", showgrid=True, gridcolor='#1e293b'),
-        legend=dict(orient="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
-        margin=dict(l=20, r=20, t=20, b=20),
-        height=340
+        height=340,
+        margin=dict(l=10, r=10, t=10, b=10)
     )
+    
+    fig.update_xaxes(title_text="Year", showgrid=True, gridcolor='#1e293b', dtick=1)
+    fig.update_yaxes(title_text="Asset Value ($M)", showgrid=True, gridcolor='#1e293b')
+
     st.plotly_chart(fig, use_container_width=True)
 
 with col_right:
